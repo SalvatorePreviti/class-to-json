@@ -42,8 +42,9 @@ const classToJSON = <T>(instance: T): T => {
         }
       }
     }
-    if (input instanceof Promise) {
-      return undefined
+
+    if (input instanceof Promise || input instanceof WeakSet || input instanceof WeakMap) {
+      return null
     }
 
     if (input instanceof Date || isView(input) || input instanceof RegExp) {
@@ -68,7 +69,9 @@ const classToJSON = <T>(instance: T): T => {
       const inputProto = Object.getPrototypeOf(input)
       result = objectCreate(null)
       do {
-        for (const k of getOwnPropertyNames(c)) {
+        const keys = getOwnPropertyNames(c)
+        for (let i = 0, len = keys.length; i < len; ++i) {
+          const k = keys[i]
           if (!processed.has(k)) {
             processed.add(k)
             const p = getOwnPropertyDescriptor(c, k)
@@ -83,7 +86,7 @@ const classToJSON = <T>(instance: T): T => {
               }
 
               defineProperty(result, k, {
-                value: process(value),
+                value,
                 configurable: true,
                 enumerable: shouldBeEnumerable,
                 writable: true
