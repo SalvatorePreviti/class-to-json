@@ -1,0 +1,4 @@
+{
+  "extends": "@acuris/eslint-config/tsconfig.json",
+  "include": ["src", "test"]
+}
